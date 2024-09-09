@@ -1,0 +1,69 @@
+// Chargement des librairies
+load "iovtk"
+load "msh3"
+
+// Choisir le maillage 
+// string namemesh = "piece_h_0_25";
+// string namemesh = "piece_h_0_5";
+string namemesh = "piece_h_1";
+
+// Choisir le pas de temps
+real dt=0.1; 
+
+// Choisir la période
+real duration = 1; //h
+
+// Lecture du maillage
+mesh3 Th=readmesh3("GeometriesAndMeshes/"+namemesh+".mesh");
+
+// Créer le dossier résultats (et le vider si non vide)
+string rootResults = "./Results_"+namemesh+"/";
+exec("mkdir " + rootResults);
+exec("rm " + rootResults + "/*");
+
+// Paramètres temporels (début ; fin et pas de temps)
+real t=0, T=5;
+
+// Créer un fichier qui contient la température 
+ofstream myfile(rootResults+"/meanOfTemp.csv");
+
+// Coefficient de conductivité thermique
+func k = 1; 
+
+// Construire l'espace d'éléments finis (ici P1)
+fespace Vh(Th,P1); 
+// Définition des fonctions : u (= u^{n+1}), uold (= u^n) et v (fonction test)
+Vh u=0,v,uold; // degrés
+
+// Formulation variationnelle (discrétisée en temps) de l'équation de la chaleur (heat = 0)
+problem heat(u,v,init=1) = 
+	int3d(Th)(u*v/dt)
+	+ int3d(Th)(k*(dx(u) * dx(v) + dy(u) * dy(v) + dz(u) * dz(v))) 
+	- int3d(Th)(uold*v/dt) 
+	+ on(16,u = 0.005*(t < duration)) 
+	+ on(17,u = 0.005*(t < duration)) 
+	+ on(18,u = 0.005*(t < duration)); 
+
+// Sauvegarder la condition initiale
+savevtk(rootResults + "/u_0.vtu", Th, u);  
+
+// Boucle en temps
+int it=1;
+myfile << t << " " << int3d(Th) (u) << endl;
+while(t<T)
+{ 
+	// Mise à jour du temps
+	t += dt;
+	cout << "Time " << t << " h." << endl;
+	// Mise à jour de uold: u^n = u^{n+1}
+    uold=u;   
+	// Résoudre l'équation de la chaleur
+    heat;  	
+	// Calcul de la moyenne 
+	myfile << t << " " << int3d(Th) (u) << endl;
+	cout << "Mean of T " << int3d(Th) (u) << " deg." << endl;	
+	// Sauvegarder la solution
+	savevtk(rootResults + "/u_"+it+".vtu", Th, u); 
+	it += 1;
+	cout << "--------------------------------------" << endl;
+}

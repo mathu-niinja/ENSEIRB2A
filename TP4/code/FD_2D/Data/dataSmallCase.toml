@@ -1,0 +1,25 @@
+[space]
+xmin = 0.0
+xmax = 0.3
+hx = 0.1
+ymin = -1.0
+ymax = 1.0
+hy = 0.5
+
+[time]
+t0 = 0.0
+tfinal = 0.2
+dt = 0.1
+# ExplicitEuler = Explicit Euler, ImplicitEuler = Implicit Euler
+scheme = "ExplicitEuler"
+
+[other]
+sigma = 0.1
+results = "resultsVerySimple"
+
+# Boundary conditions
+[BC]
+LeftBoundCond = "Dirichlet"
+RightBoundCond = "Dirichlet"
+DownBoundCond = "Dirichlet"
+UpBoundCond = "Dirichlet"

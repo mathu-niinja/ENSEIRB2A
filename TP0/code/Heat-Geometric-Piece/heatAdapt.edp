@@ -1,0 +1,78 @@
+// Chargement des librairies
+load "iovtk"
+
+// Construire un maillage
+int n = 75;
+border ba(t=0, 1){x=t; y=0; label=0;}
+border bb(t=0, 0.5){x=1; y=t; label=0;}
+border bc(t=0, 0.5){x=1-t; y=0.5; label=0;}
+border bd(t=0.5, 1){x=0.5; y=t; label=0;}
+border be(t=0.5, 1){x=1-t; y=1; label=0;}
+border bf(t=0, 1){x=0; y=1-t; label=0;}
+mesh Th = buildmesh(ba(2*n) + bb(n) + bc(n) + bd(n) + be(n) + bf(2*n));
+
+// Créer le dossier résultats (et le vider si non vide)
+bool adapt = 0;
+string rootResults = "./Results_no_adapt/";
+if (adapt == 1)
+{
+	rootResults = "./Results_adapt/";
+}
+exec("mkdir " + rootResults);
+exec("rm " + rootResults + "/*");
+string Lshapemesh = rootResults+"Lshape.mesh";
+savemesh(Th, Lshapemesh);
+exec("rm " + Lshapemesh + ".gmsh");
+
+// Pour mesurer le temps
+real inittime = clock();
+
+// Paramètres temporels (début ; fin et pas de temps)
+real t=0, T=5, dt=0.1; 
+
+// Terme source
+func f=(((x-0.5)^2+(y-0.5)^2) < 0.01); 
+
+// Coefficient de conductivité thermique
+func k = 0.1; 
+
+// Construire l'espace d'éléments finis (ici P1)
+fespace Vh(Th,P1); 
+// Définition des fonctions : u (= u^{n+1}), uold (= u^n) et v (fonction test)
+Vh u=0,v,uold; 
+
+// Formulation variationnelle (discrétisée en temps) de l'équation de la chaleur (heat = 0)
+problem heat(u,v) = 
+	int2d(Th)(u*v/dt)
+	+ int2d(Th)(k*(dx(u) * dx(v) + dy(u) * dy(v))) 
+	- int2d(Th)(uold*v/dt) 
+	- int2d(Th)(f*v); 
+
+// Sauvegarder la condition initiale
+savevtk(rootResults + "/u_0.vtu", Th, u);  
+
+// Boucle en temps
+int it=1;
+while(t<T)
+{ 
+	// Mise à jour du temps
+	t += dt;
+	// Mise à jour de uold: u^n = u^{n+1}
+    uold=u;   
+	// Résoudre l'équation de la chaleur
+    heat;  
+	if (adapt == 1)
+	{
+		// Adapter le maillage à la solution 
+		Th = adaptmesh(Th, u, err = 5e-3);
+	}
+	// Sauvegarder la solution
+	savevtk(rootResults + "/u_"+it+".vtu", Th, u); 
+	it += 1;
+}
+cout << endl;
+cout << endl;
+cout << "temps de calcul " << clock()-inittime << " (sec) " << endl;
+cout << endl;
+cout << endl;
+
