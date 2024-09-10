@@ -3,9 +3,9 @@ load "iovtk"
 load "msh3"
 
 // Choisir le maillage 
-// string namemesh = "piece_h_0_25";
+ string namemesh = "piece_h_0_25";
 // string namemesh = "piece_h_0_5";
-string namemesh = "piece_h_1";
+//string namemesh = "piece_h_1";
 
 // Choisir le pas de temps
 real dt=0.1; 
