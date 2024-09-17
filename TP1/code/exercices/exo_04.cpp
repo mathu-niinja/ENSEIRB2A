@@ -11,9 +11,12 @@ int main()
     const int nombre = (rand() % 100);
     int proposition(0), est_gagnant(nb_essai + 1);
     cout << "Le nombre caché est un entier compris entre 0 et 100." << endl;
-    cout << "Vous avez " << nb_essai << " essais pour le trouver." << endl;
+    //cout << "Vous avez " << nb_essai << " essais pour le trouver." << endl;
 
-    for (int essai = 1; essai <= nb_essai; essai++)
+    int essai = 1;
+
+    while (proposition != nombre )
+    //for (int essai = 1; essai <= nb_essai; essai++)
     {
         cout << "Essai : " << essai << " : votre proposition est : ";
         cin >> proposition;
@@ -30,6 +33,7 @@ int main()
         {
             cout << "Plus" << endl;
         }
+        essai++;
     }
     if (est_gagnant <= nb_essai)
     {

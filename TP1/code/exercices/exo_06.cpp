@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void valeur(int b)
+void valeur(int& b)
 {
     b = 5;
 }

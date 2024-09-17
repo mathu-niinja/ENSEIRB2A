@@ -1,6 +1,6 @@
 /* Chargement du fichier << iostream >> qui est une bibliothèque
 d'affichage de messages à l'écran dans une console */
-#include <iostream>
+#include <iostream> 
 
 // Choisir parmi différentes bibliothèques celles que l'on veut
 using namespace std;

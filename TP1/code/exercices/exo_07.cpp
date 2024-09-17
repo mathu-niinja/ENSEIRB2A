@@ -5,6 +5,7 @@
 
 using namespace std;
 
+/*
 int main()
 {
     vector<int> x(10); // Un tableau de 10 entiers
@@ -20,6 +21,22 @@ int main()
     for (int i = 0; i < x.size(); i++)
     {
         cout << "x[" << i << "]=" << x[i] << endl;
+    }
+    return 0;
+}
+*/
+
+int main()
+{
+    vector<string> S; // un tableau vide de string
+    S.push_back("Pierre"); //Rajoute "Pierre" en fin de tableau.
+    S.push_back("Julien"); //Rajoute "Julien" en fin de tableau.
+    S.push_back("Paul"); //Rajoute "Paul" en fin de tableau.
+    sort(S.begin(),S.end());
+    // Les string sont triés par ordre alphabétique
+    for( int i=0 ; i<S.size() ; ++i )
+    {
+        cout << "Bonjour " << S[i] << endl;
     }
     return 0;
 }
