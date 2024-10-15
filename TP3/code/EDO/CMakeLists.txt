@@ -27,7 +27,7 @@ set( CMAKE_SKIP_INSTALL_RULES True )
 # Options spécifiques à ce projet.
 
 # Décommentez la ligne que vous souhaitez, puis recompilez.
-# set( CMAKE_BUILD_TYPE "Debug" )
+#set( CMAKE_BUILD_TYPE "Debug" )
 set( CMAKE_BUILD_TYPE "Release" )
 
 # Nom de l'exécutable qui sera créé dans le répertoire "build/".

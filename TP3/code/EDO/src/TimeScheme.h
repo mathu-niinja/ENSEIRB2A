@@ -12,7 +12,7 @@ class TimeScheme
     // Vecteur initial et vecteur solution
     Eigen::VectorXd _sol0, _sol;
     // Pointeur vers le système d'EDO
-    OdeSystem* _sys;
+  OdeSystem* _sys; //
 
   public:
     // Constructeur par défaut

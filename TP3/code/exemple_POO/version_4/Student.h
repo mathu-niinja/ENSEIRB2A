@@ -26,7 +26,8 @@ class Student
 
     // Ajouter une nouvelle note
     // Fonction virtuelle pure => définie dans les classes filles
-    virtual void AddMark(double mark) = 0;
+    virtual void AddMark(double mark) = 0; //si virtuelle pure definition specifique dasn chaque classe fille 
+    //si non virtuelle pure on peut creer une generale et des specifiques. 
 
     // Afficher le nom de l'élève et sa note
     void Print();

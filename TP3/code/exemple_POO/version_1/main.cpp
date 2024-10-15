@@ -6,10 +6,11 @@
 int main()
 {
 	// Un groupe de 4 étudiants
-	std::vector<Student*> students(4);
+	std::vector<Student*> students(4); //utilisation d'un pointeur 
 
 	students[0] = new Student(); // Premier(e) étudiant(e)
 	students[0]->Initialize("Gabriel", "Guerin"); // Son nom de famille et son prénom sont connus
+	//la syntaxe pour utiliser une methode sur u pointeur de classe (eq this->)
 
 	students[1] = new Student(); // Second(e) étudiant(e)
 	students[1]->Initialize("Jules", ""); // Son prénom slmt est connu
@@ -29,7 +30,7 @@ int main()
 		{
 			students[i]->AddMark(marks[j]);
 		}
-		students[i]->Print();
+		students[i]->Print(); //syntaxe comme precedemment avec l'utilisation des pointeurs 
 	}
 
 

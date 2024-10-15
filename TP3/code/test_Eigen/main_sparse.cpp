@@ -22,29 +22,30 @@ int main()
 	cout << Id << endl;
 	cout << "-------------------------------" << endl;
 
-	vector<Triplet<double>> triplets;
+	vector<Triplet<double>> list_triplets;
 	for (int i=0; i<S.rows(); ++i) {
-		triplets.push_back({i,i,1.});
+		list_triplets.push_back({i,i,1.});
 		if (i > 0)
-		triplets.push_back({i,i-1,-2.});
+		list_triplets.push_back({i,i-1,-2.});
 		if (i < S.rows()-1)
-		triplets.push_back({i,i+1,2.});
+		list_triplets.push_back({i,i+1,2.});
 	}
-	S.setFromTriplets(triplets.begin(), triplets.end());
+	S.setFromTriplets(list_triplets.begin(), list_triplets.end());
 
-	triplets.clear();
+	list_triplets.clear();
+	
 	for (int i=0; i<T.rows(); ++i) {
-		triplets.push_back({i,i,2.});
+		list_triplets.push_back({i,i,2.});
 		if (i > 1)
-			triplets.push_back({i,i-2,-4.});
+			list_triplets.push_back({i,i-2,-4.});
 		if (i < T.rows()-2)
-			triplets.push_back({i,i+2,4.});
+			list_triplets.push_back({i,i+2,4.});
 		if (i > 3)
-			triplets.push_back({i,i-4,-8.});
+			list_triplets.push_back({i,i-4,-8.});
 		if (i < T.rows()-4)
-			triplets.push_back({i,i+4,8.});
+			list_triplets.push_back({i,i+4,8.});
 	}
-	T.setFromTriplets(triplets.begin(), triplets.end());
+	T.setFromTriplets(list_triplets.begin(), list_triplets.end());
 
 	vector<int> index_x = {0, 2, 9};
 	for (int i = 0 ; i < index_x.size() ; ++i)

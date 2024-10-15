@@ -59,6 +59,7 @@ int main()
 	cout << "x(" << i <<") = " << x_i << endl;
 	cout << "-------------------------------" << endl;
 	int num_rows_B = B.rows();              // number of rows of Matrix B
+	cout << "nombre de lignes de B : " << B.rows() << endl;
 	int num_cols_B = B.cols();              // number of columns of Matrix B
 	i = (num_rows_B/2);
 	int j = (num_cols_B/2);

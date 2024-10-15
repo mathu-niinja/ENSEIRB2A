@@ -49,7 +49,7 @@ int main()
 		time_scheme.SaveSolution();
 	}
 
-	/*
+	
 	// On récupère la solution approchée au temps final
 	VectorXd approxSol = time_scheme.GetIterateSolution();
 	// Définition de la solution exacte au temps final
