@@ -14,6 +14,7 @@ int main(int argc, char** argv)
    // ----------------------- Fichier de données --------------------------------
    DataFile* df = new DataFile(argv[1]);
 
+
    // ---------------------------- Résolution  ----------------------------------
    // Pointeur contenant toutes les fonctions utiles
    Function* function = new Function(df);
@@ -37,6 +38,8 @@ int main(int argc, char** argv)
       std::cout << "Ce choix n'est pas possible ! Veuillez recommencer !" << std::endl;
       exit(0);
    }
+
+   
 
    // ----------------------- Libère la mémoire ---------------------------------
    // Ne pas oublier de détruire tous les pointeurs que nous avons utilisé

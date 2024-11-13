@@ -45,6 +45,7 @@ public:
    // Constructeur
    DataFile(std::string file_name);
 
+   //Getters 
    const double & Get_xmin() const {return _xmin;};
    const double & Get_xmax() const {return _xmax;};
    const double & Get_hx() const {return _hx;};

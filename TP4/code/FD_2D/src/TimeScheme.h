@@ -16,6 +16,8 @@ public:
    // Destructeur par défaut - Si la classe ne contient pas de destructeur par défaut
    // alors le compilateur en génère un implicitement.
    virtual ~TimeScheme();
+   void SaveSol(Eigen::VectorXd sol, std::string name_sol, int n);
+
 
 };
 

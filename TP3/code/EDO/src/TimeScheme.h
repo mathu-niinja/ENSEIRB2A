@@ -4,7 +4,7 @@
 
 class TimeScheme
 {
-  private:
+  protected:
     // Pas de temps
     double _dt;
     // Temps en cours
@@ -25,9 +25,21 @@ class TimeScheme
     // Enregistre la solution un fichier
     void SaveSolution();
     // Une étape du schéma en temps
-    void Advance();
+    virtual void Advance() = 0;
     // Permet de récupérer _sol
     const Eigen::VectorXd & GetIterateSolution() const;
+};
+
+class EulerScheme : public TimeScheme
+{
+  public :
+    void Advance();
+};
+
+class RungeKuttaScheme4 : public TimeScheme
+{ 
+  public :
+    void Advance();
 };
 
 #define _TIME_SCHEME_H
