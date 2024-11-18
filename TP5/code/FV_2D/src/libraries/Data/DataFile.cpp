@@ -61,7 +61,7 @@ DataFile::DataFile(std::string file_name)
 
    if ((this->_which_scenario == "diffusion_hom_neumann") || (this->_which_scenario == "diffusion_all_BC")
    || (this->_which_scenario == "advection_hom_neumann") ||  (this->_which_scenario == "advection_all_BC")
-   || (this->_which_scenario == "diffusion_advection_all_BC") )
+   || (this->_which_scenario == "advection_diffusion_all_BC") )
    {
       cout << "-------------------------------------------------" << endl;
       cout << "The test case: " << this->_which_scenario << " has been chosen." << endl;
@@ -74,7 +74,7 @@ DataFile::DataFile(std::string file_name)
    else if (this->_which_scenario == "none")
    {
       cout << "-------------------------------------------------" << endl;
-      cout << "It is not a test case!" << endl;
+      cout << "It is not a test case => no analytical solution!" << endl;
       cout << "-------------------------------------------------" << endl;
    }
    else

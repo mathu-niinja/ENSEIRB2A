@@ -6,9 +6,10 @@
 
 using namespace std;
 using namespace Eigen;
+using namespace AdvectionDiffusion;
 
 // Constructeur
-FiniteVolume::FiniteVolume(Function* function, DataFile* data_file, Mesh2D* mesh) :
+FiniteVolume::FiniteVolume(Analytical* function, DataFile* data_file, Mesh2D* mesh) :
 _fct(function), _df(data_file), _msh(mesh)
 {
 	std::cout << "Build finite volume class." << std::endl;
@@ -40,8 +41,7 @@ VectorXd FiniteVolume::Initial_condition()
 
 	for (unsigned int i = 0; i < this->_msh->Get_triangles().size(); i++)
 	{
-		sol0(i) = this->_fct->Initial_condition(this->_msh->Get_triangles_center()(i,0),
-		this->_msh->Get_triangles_center()(i,1));
+		sol0(i) = this->_fct->Initial_condition(this->_msh->Get_triangles_center().row(i));
 	}
 
 	return sol0;
@@ -54,8 +54,7 @@ VectorXd FiniteVolume::Source_term(double t)
 
 	for (unsigned int i = 0; i < this->_msh->Get_triangles().size(); i++)
 	{
-		sourceterm(i) = this->_fct->Source_term(this->_msh->Get_triangles_center()(i,0),
-		this->_msh->Get_triangles_center()(i,1), t);
+		sourceterm(i) = this->_fct->Source_term(this->_msh->Get_triangles_center().row(i),t);
 	}
 
 	return sourceterm;
@@ -68,8 +67,7 @@ VectorXd FiniteVolume::Exact_solution(const double t)
 
 	for (unsigned int i = 0; i < this->_msh->Get_triangles().size(); i++)
 	{
-		exactsol(i) = this->_fct->Exact_solution(this->_msh->Get_triangles_center()(i,0),
-		this->_msh->Get_triangles_center()(i,1), t);
+		exactsol(i) = this->_fct->Exact_solution(this->_msh->Get_triangles_center().row(i), t);
 	}
 	return exactsol;
 }

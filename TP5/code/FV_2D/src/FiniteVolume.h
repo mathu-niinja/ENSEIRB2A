@@ -3,14 +3,14 @@
 #include <string>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include "libraries/Data/Function.h"
+#include "libraries/Data/AnalyticalAdvectionDiffusion.h"
 #include "libraries/Mesh/Mesh2D.h"
 
 class FiniteVolume {
 private:
-	// Pointeur de la classe Function (accès à la condition initiale,
-	// la solution exacte et à la vitesse)
-	const Function* _fct;
+	// Pointeur de la classe Analytical (accès à la condition initiale,
+	// le terme source, la solution exacte, la vitesse, etc.)
+	const AdvectionDiffusion::Analytical* _fct;
 	// Pointeur de la classe DataFile pour récupérer toutes les
 	// valeurs de paramètres
 	const DataFile* _df;
@@ -26,7 +26,7 @@ private:
 
 public:
 	// Constructeur
-	FiniteVolume(Function* fct, DataFile* data_file, Mesh2D* mesh);
+	FiniteVolume(AdvectionDiffusion::Analytical* fct, DataFile* data_file, Mesh2D* mesh);
 
 	// Construit la matrice des flux et le membre de droite
 	void Build_flux_mat_and_rhs(const double& t);

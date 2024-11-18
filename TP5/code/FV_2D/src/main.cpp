@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace Eigen;
+using namespace AdvectionDiffusion;
 
 int main(int argc, char** argv)
 {
@@ -12,6 +13,7 @@ int main(int argc, char** argv)
    if (argc < 2)
    {
       cout << "Please, enter the name of your data file." << endl;
+      cout << "Usage: " << argv[0] << " <file.toml>" << endl;
       exit(0);
    }
    const string data_file_name = argv[1];
@@ -29,14 +31,41 @@ int main(int argc, char** argv)
    // ---------------------------- Résolution  ----------------------------------
    Mesh2D* mesh = new Mesh2D(data_file->Get_BC_ref(),data_file->Get_BC_type());
    mesh->Read_mesh(data_file->Get_mesh_name());
-   Function* fct = new Function(data_file);
-   FiniteVolume* fin_vol = new FiniteVolume(fct, data_file, mesh);
    TimeScheme* time_scheme = NULL;
 
-   if (data_file->Get_scheme() == "ExplicitEuler")
-   time_scheme = new EulerScheme(data_file, fin_vol);
-   else
-   time_scheme = new ImplicitEulerScheme(data_file, fin_vol);
+   Analytical* analytical;
+   bool has_analytical = false;
+   if (data_file->Get_scenario() == "none") { // Pas de solution analytique spécifiée
+      analytical = new Analytical(data_file);
+   }
+   else {
+      has_analytical = true;
+
+      if (data_file->Get_scenario() == "advection_hom_neumann") {
+         analytical = new AdvectionHomogeneousNeumann(data_file);
+      }
+      else if (data_file->Get_scenario() == "diffusion_hom_neumann") {
+         analytical = new DiffusionHomogeneousNeumann(data_file);
+      }
+      else if (data_file->Get_scenario() == "diffusion_all_BC") {
+         analytical = new DiffusionAll(data_file);
+      }
+      else if (data_file->Get_scenario() == "advection_diffusion_all_BC") {
+         analytical = new AdvectionDiffusionAll(data_file);
+      }
+      else {
+         cout << "Consider developing your own scenario or choose \"none\"." << endl;
+         exit(1);
+      }
+   }
+
+   FiniteVolume* fin_vol = new FiniteVolume(analytical, data_file, mesh);
+   if (data_file->Get_scheme() == "ExplicitEuler") {
+      time_scheme = new ExplicitEulerScheme(data_file, fin_vol);
+   }
+   else {
+      time_scheme = new ImplicitEulerScheme(data_file, fin_vol);
+   }
 
    cout << "-------------------------------------------------" << endl;
    cout << "Search u such that : " << endl;
@@ -47,7 +76,7 @@ int main(int argc, char** argv)
    auto start = chrono::high_resolution_clock::now();
 
 
-   if (data_file->Get_scenario() == "none") // Boucle temporelle classique
+   if (!has_analytical) // Boucle temporelle simple pour solution numérique pure
    {
       cout << "Save initial condition " << endl;
       time_scheme->Save_solution(0);
@@ -59,7 +88,7 @@ int main(int argc, char** argv)
          time_scheme->Save_solution(n);
       }
    }
-   else //  Si on connait la solution exacte
+   else //  Si on connaît la solution exacte
    {
       cout << "Save initial condition " << endl;
       double t(data_file->Get_t0());
@@ -97,7 +126,7 @@ int main(int argc, char** argv)
    delete time_scheme;
    delete fin_vol;
    delete data_file;
-   delete fct;
+   delete analytical;
 
    return 0;
 }

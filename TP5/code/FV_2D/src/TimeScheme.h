@@ -27,14 +27,14 @@ public:
    // Une étape du schéma en temps
    virtual void Advance() = 0;
    // Permet de récupérer _sol
-   const Eigen::VectorXd & Get_sol() const {return _sol;};;
+   const Eigen::VectorXd & Get_sol() const {return _sol;};
 };
 
-class EulerScheme : public TimeScheme
+class ExplicitEulerScheme : public TimeScheme
 {
 public:
    // Constructeur
-   EulerScheme(DataFile* data_file, FiniteVolume* lap);
+   ExplicitEulerScheme(DataFile* data_file, FiniteVolume* fv);
    // Une étape du schéma en temps
    void Advance();
 };
@@ -45,7 +45,7 @@ private:
    Eigen::SparseLU<Eigen::SparseMatrix<double> > _solver_direct;
 public:
    // Constructeur
-   ImplicitEulerScheme(DataFile* data_file, FiniteVolume* lap);
+   ImplicitEulerScheme(DataFile* data_file, FiniteVolume* fv);
    // Une étape du schéma en temps
    void Advance();
 };

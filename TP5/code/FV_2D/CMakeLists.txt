@@ -35,7 +35,7 @@ set( CMAKE_BUILD_TYPE "Debug" )
 set( TARGET_NAME "tp5_fv_2d_${CMAKE_BUILD_TYPE}" )
 
 # Liste *exhaustive* des fichiers à compiler ensemble.
-set( PROJECT_COMPILATION_FILE_LIST src/libraries/Data/DataFile.cpp src/libraries/Data/Function.cpp src/libraries/Mesh/Mesh2D.cpp src/FiniteVolume.cpp src/TimeScheme.cpp src/main.cpp )
+set( PROJECT_COMPILATION_FILE_LIST src/libraries/Data/DataFile.cpp src/libraries/Data/AnalyticalAdvectionDiffusion.cpp src/libraries/Mesh/Mesh2D.cpp src/FiniteVolume.cpp src/TimeScheme.cpp src/main.cpp )
 
 # Précise que l'exécutable sera à assembler avec ces fichiers compilés.
 add_executable( ${TARGET_NAME} ${PROJECT_COMPILATION_FILE_LIST} )

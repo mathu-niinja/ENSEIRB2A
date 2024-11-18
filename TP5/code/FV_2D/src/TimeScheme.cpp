@@ -12,15 +12,17 @@ _fin_vol(adv),_df(data_file), _sol(adv->Initial_condition()), _t(_df->Get_t0())
 {
 }
 
-EulerScheme::EulerScheme(DataFile* data_file, FiniteVolume* adv) :
+ExplicitEulerScheme::ExplicitEulerScheme(DataFile* data_file, FiniteVolume* adv) :
 TimeScheme(data_file, adv)
 {
+   std::cout << "Build time scheme class: ExplicitEulerScheme." << std::endl;
+   std::cout << "-------------------------------------------------" << std::endl;
 }
 
 ImplicitEulerScheme::ImplicitEulerScheme(DataFile* data_file, FiniteVolume* adv) :
 TimeScheme(data_file, adv)
 {
-   std::cout << "Build time scheme class." << std::endl;
+   std::cout << "Build time scheme class: ImplicitEulerScheme." << std::endl;
    std::cout << "-------------------------------------------------" << std::endl;
 }
 
@@ -30,7 +32,7 @@ TimeScheme::~TimeScheme()
 }
 
 // Euler Explicite
-void EulerScheme::Advance()
+void ExplicitEulerScheme::Advance()
 {
    // TODO
 }
