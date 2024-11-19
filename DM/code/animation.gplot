@@ -1,0 +1,21 @@
+reset
+set xrange [-3:3]
+set yrange [-3:3]
+
+Idebut = 0
+Nint = 1000
+
+# Désactiver la légende (key)
+unset key
+
+# Spécifier la taille des points (par exemple, 2)
+set pointsize 1
+
+# Spécifier la couleur des points (bleu marine)
+set style line 1 lc rgb "navy" pt 7  # pt 7 définit le type de point (par exemple, un cercle)
+
+do for [i=Idebut:Nint] {
+    plot "results/points_vortex.txt_".i u 1:2 w p ls 1 
+    refresh 
+    pause 0.01
+}
