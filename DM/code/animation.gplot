@@ -2,6 +2,9 @@ reset
 set xrange [-3:3]
 set yrange [-3:3]
 
+set term gif animate delay 1 size 800,600
+set output 'vortex.gif'
+
 Idebut = 0
 Nint = 5000
 
@@ -16,6 +19,6 @@ set style line 1 lc rgb "navy" pt 7  # pt 7 définit le type de point (par exemp
 
 do for [i=Idebut:Nint] {
     plot "results/points_vortex.txt_".i u 1:2 w p ls 1 
-    refresh 
-    pause 0.01
+    #refresh 
+    #pause 0.01
 }
