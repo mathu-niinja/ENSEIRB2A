@@ -42,7 +42,7 @@ public:
    std::string Get_BC() const { return _BC;};
 };
 
-class Triangle
+class Triangle //eventuellement rajouter deux methodes : centre et aire du triangle 
 {
 private:
    Eigen::Vector3i _v_triangle;

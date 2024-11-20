@@ -3,7 +3,7 @@ set xrange [-3:3]
 set yrange [-3:3]
 
 Idebut = 0
-Nint = 1000
+Nint = 5000
 
 # Désactiver la légende (key)
 unset key

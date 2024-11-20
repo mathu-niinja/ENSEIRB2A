@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include <chrono>
+#include <random>
 
 using namespace std;
 using namespace Eigen;
@@ -35,8 +36,8 @@ int main()
 	cout << "3 : 2 Vortex actifs avec calcul de la solution exacte" << endl;
 	cout << "4 : 4 Vortex actifs, premier exemple (choix du lambda)" << endl;
 	cout << "5 : 4 Vortex actifs, deuxième exemple" << endl;
-	cout << "6 : N Vortex actifs" << endl;
-	cout << "7 : N Vortex actifs, M Vortex passifs" << endl;
+	cout << "6 : N Vortex actifs placés en ellipse" << endl;
+	cout << "7 : N Vortex actifs, M Vortex passifs placés aléatoirement" << endl;
 	cout << "------------------------------------" << endl;
     cin >> choix_probleme;
 
@@ -233,15 +234,27 @@ int main()
 			omega.setZero();
 			sol0.resize(2*(N+M));
 			
-            for (int i=0; i<N+M; i++)
-				{
-				if (i<N){
-					omega(i) = 1;
-				}
-				sol0(2*i) = cos(2*i*M_PI/(M+N));
-				sol0(2*i+1) = sin(2*i*M_PI/(M+N));
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_real_distribution<> dist_pos(-3.0, 3.0);
+
+			// Initialisation des vortex actifs
+			for (int i = 0; i < N; i++)
+			{
+				sol0(2*i) = dist_pos(gen);
+				sol0(2*i+1) = dist_pos(gen);
+				omega(i) = 1.0; // Circulation pour vortex actif
+			}
+
+			// Initialisation des vortex passifs
+			for (int i = N; i < N+M; i++)
+			{
+				sol0(2*i) = dist_pos(gen);
+				sol0(2*i+1) = dist_pos(gen);
+				omega(i) = 0.0; // Circulation pour vortex passif
 			}
 			
+
 			results = "N_" + to_string(N) + "_VortexActifs_M" + to_string(M) + "_VortexPassifs";
 			
 			sys = new VortexSystem(N+M,omega);
@@ -283,12 +296,12 @@ int main()
 	auto start = chrono::high_resolution_clock::now(); //init chrono 
 
 	time_scheme->Initialize(t0, dt, sol0, results, sys); // Initialisation
-	time_scheme->SaveSolution(0); // Sauvegarde condition initiale
+	time_scheme->SaveSolution(0); // Sauvegarde condition initiale, commenter cette ligne pour une mesure du temps plus précise 
 
 	for (int n = 0; n < nb_iterations; n++)
 	{ // Boucle en temps
 		time_scheme->Advance();
-		time_scheme->SaveSolution(n+1);
+		time_scheme->SaveSolution(n+1); //commenter cette ligne pour une mesure du temps plus précise
 	}
 
 	auto end = chrono::high_resolution_clock::now(); //fin chrono
@@ -310,10 +323,6 @@ int main()
 		cout << "Erreur = " << error2 << " pour dt = " << dt/2. << endl;
 		cout << "Ordre de la méthode '" << str_method << "' = " << log2(error/error2) << endl;
 	}
-
-    //Sauvegarder des screens des plots 
-    //analyse de l'erreur pour les différentsc schemas (euler et RK4)
-    //analyse convergence des schemas 
 
 	delete sys;
 	delete time_scheme; 
