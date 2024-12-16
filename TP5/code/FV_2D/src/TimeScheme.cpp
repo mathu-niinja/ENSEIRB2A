@@ -17,6 +17,7 @@ TimeScheme(data_file, adv)
 {
    std::cout << "Build time scheme class: ExplicitEulerScheme." << std::endl;
    std::cout << "-------------------------------------------------" << std::endl;
+   _fin_vol->Build_flux_mat_and_rhs(this->_t);
 }
 
 ImplicitEulerScheme::ImplicitEulerScheme(DataFile* data_file, FiniteVolume* adv) :
@@ -34,13 +35,34 @@ TimeScheme::~TimeScheme()
 // Euler Explicite
 void ExplicitEulerScheme::Advance()
 {
-   // TODO
+   double dt(this->_df->Get_dt());
+   _fin_vol->Build_flux_mat_and_rhs(this->_t);
+   this->_sol+= - dt*(_fin_vol->Get_flux_matrix()*this->_sol+_fin_vol->Get_BC_RHS());
+   this->_sol+=  dt*_fin_vol->Source_term(this->_t);
+   this->_t+=_df->Get_dt();
 }
 
 // Euler Implicite
 void ImplicitEulerScheme::Advance()
 {
-   // TODO
+   SparseMatrix<double> Id(this->_sol.size(),this->_sol.size()), M;
+   SparseLU<SparseMatrix<double>> solver;
+   Eigen::VectorXd b;
+   Id.setIdentity();
+   double dt(this->_df->Get_dt());
+   _fin_vol->Build_flux_mat_and_rhs(this->_t+dt);
+   M=Id+dt*_fin_vol->Get_flux_matrix();
+   solver.analyzePattern(M);
+   solver.factorize(M);
+   b=this->_sol - dt*_fin_vol->Get_BC_RHS()+dt*_fin_vol->Source_term(this->_t+dt);
+   this->_sol=solver.solve(b);
+   this->_t+=_df->Get_dt();
+   /*std::cout<<"___________________________"<<std::endl;
+   std::cout<< _fin_vol->Get_flux_matrix()<<std::endl;
+   std::cout<<"___________________________"<<std::endl;
+   std::cout<< _fin_vol->Get_BC_RHS()<<std::endl;
+   std::cout<<"___________________________"<<std::endl;
+   std::cout<< _fin_vol->Source_term(this->_t+dt)<<std::endl;*/
 }
 
 #define _TIME_SCHEME_CPP

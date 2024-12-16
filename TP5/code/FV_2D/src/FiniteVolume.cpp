@@ -16,95 +16,111 @@ _fct(function), _df(data_file), _msh(mesh)
 	std::cout << "-------------------------------------------------" << std::endl;
 }
 
-/* // Construit la matrice des flux 
+ // Construit la matrice des flux 
 void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 {
-	// Matrix
-	this->_mat_flux.resize(this->_msh->Get_triangles().size(),this->_msh->Get_triangles().size());
-	// RHS
-	this->_BC_RHS.resize(this->_msh->Get_triangles().size());
-	this->_BC_RHS.setZero();
-	vector<Triplet<double>> triplets;	triplets.clear();
-	for (unsigned int i = 0; i < this->_msh->Get_edges().size(); i++)
-	{
-		// TODO
-	}
-	this->_mat_flux.setFromTriplets(triplets.begin(), triplets.end());
-}*/
-
-void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
-{
-    // Dimensionner la matrice et initialiser le vecteur RHS
+    // Matrix
     this->_mat_flux.resize(this->_msh->Get_triangles().size(), this->_msh->Get_triangles().size());
+    // RHS
     this->_BC_RHS.resize(this->_msh->Get_triangles().size());
     this->_BC_RHS.setZero();
+    vector<Triplet<double>> triplets;	triplets.clear();
 
-    vector<Triplet<double>> triplets;
-    triplets.clear();
+	string Flux_num_choice(_df->Get_numerical_flux_choice());
 
-    // Parcourir toutes les arêtes
-    for (unsigned int i = 0; i < this->_msh->Get_edges().size(); i++)
+	double mu = this->_df->Get_mu();  // Coefficient de diffusion
+
+	double alphaD, betaD, alphaA, betaA, alpha, beta; 
+	double d_ij,d_ie;
+
+    for (unsigned int k = 0; k < this->_msh->Get_edges().size(); k++)
     {
-        const Edge& edge = this->_msh->Get_edges()[i];
-        double length = this->_msh->Get_edges_length()(i); // Longueur de l'arête
-        Vector2d normal = this->_msh->Get_edges_normal().row(i); // Normale de l'arête
+		double nx(_msh->Get_edges_normal()(k,0)),ny(_msh->Get_edges_normal()(k,1));
 
-        int t1 = edge.Get_T1(); // Triangle côté 1
-        int t2 = edge.Get_T2(); // Triangle côté 2 (ou -1 si c'est une arête de bord)
+		Eigen::Vector2d X;
 
-        // Centres des triangles
-        Vector2d center_t1 = this->_msh->Get_triangles_center().row(t1);
-        double area_t1 = this->_msh->Get_triangles_area()(t1);
+		X(0)= this->_msh->Get_edges_center()(k,0);
+		X(1)= this->_msh->Get_edges_center()(k,1);
+		double vn(nx*_fct->Velocity(X,t)(0)+ny*_fct->Velocity(X,t)(1));
+		
+		if (Flux_num_choice=="upwind"){ //definition coefficients advection
+			if (vn>=0)
+			{
+				alphaA=vn;
+				betaA=0;
+			}
+			if (vn<0)
+			{
+				alphaA=0;
+				betaA=vn;
+			}
+		}
+		if (Flux_num_choice=="centered"){
+			alphaA=vn/2;
+			betaA=vn/2;
+		}
+		
+		int i = _msh->Get_edges()[k].Get_T1(); //t1
+		int j = _msh->Get_edges()[k].Get_T2(); //t2
 
-        Vector2d velocity = this->_fct->Velocity(center_t1.x(), center_t1.y(), t); // Champ de vitesse
-        double advective_flux = velocity.dot(normal); // Flux advectif normal
+		double e_k = this->_msh->Get_edges_length()[k]; //longueur arete k 
+		double area_Ti = this->_msh->Get_triangles_area()[i]; //aire de t1
 
-        double diffusivity = this->_fct->Diffusivity(center_t1.x(), center_t1.y(), t); // Coefficient de diffusion
-        double distance = (t2 != -1) ? 
-                          (this->_msh->Get_triangles_center().row(t2) - center_t1).norm() : 
-                          (center_t1 - edge.Get_Center()).norm(); // Distance entre centres
+        if (j != (-1)) { //arrete interieur      
 
-        // Gestion des flux internes ou arêtes de bord
-        if (t2 != -1) // Flux interne
-        {
-            // Contribuer aux coefficients α et β
-            double alphaD = diffusivity / distance; // Diffusion centrée
-            double betaD = -alphaD;
+            X[0]=_msh->Get_triangles_center()(i,0)-_msh->Get_triangles_center()(j,0);
+			X[1]=_msh->Get_triangles_center()(i,1)-_msh->Get_triangles_center()(j,1);			
+			d_ij = sqrt(X(0)*X(0)+X(1)*X(1));
 
-            double alphaA = (advective_flux >= 0) ? advective_flux : 0; // Upwind advectif
-            double betaA = (advective_flux < 0) ? advective_flux : 0;
+			alphaD = mu / d_ij;
+			betaD = - mu / d_ij;
 
-            // Ajouter contributions à A
-            triplets.emplace_back(t1, t1, (length / area_t1) * (alphaD + alphaA));
-            triplets.emplace_back(t1, t2, (length / area_t1) * (betaD + betaA));
+			alpha = alphaA + alphaD;
+			beta = betaA + betaD;
+
+			double area_Tj = this->_msh->Get_triangles_area()[j];
+
+            // Ajouter les triplets à la matrice
+            triplets.push_back(Triplet<double>(i, i, e_k * alpha/area_Ti)); //divise par Ti
+			triplets.push_back(Triplet<double>(i, j, e_k * beta/area_Ti));
+			triplets.push_back(Triplet<double>(j, i, -e_k * alpha/area_Tj));
+            triplets.push_back(Triplet<double>(j, j, -e_k * beta/area_Tj)); //divise par Tj
+        
         }
-        else // Condition de bord
-        {
-            std::string BC_type = edge.Get_BC(); // Type de condition aux bords
-            if (BC_type == "Neumann")
-            {
-                // Neumann : ajuster RHS pour diffusion ou advection
-                double g = this->_fct->Neumann_BC(edge.Get_Center().x(), edge.Get_Center().y(), t);
-                this->_BC_RHS(t1) += -(length / area_t1) * diffusivity * g;
-            }
-            else if (BC_type == "Dirichlet")
-            {
-                // Dirichlet : ajuster A et RHS
-                double h = this->_fct->Dirichlet_BC(edge.Get_Center().x(), edge.Get_Center().y(), t);
-                double alphaD = diffusivity / distance;
-                double betaD = -alphaD;
+		if (j == -1) {  // Arête de bord
+			// Calculer la distance entre le centre du triangle et le centre de l'arête
+			d_ie = 2*sqrt(pow((_msh->Get_triangles_center()(i,0)-_msh->Get_edges_center()(k,0)),2)+pow(_msh->Get_triangles_center()(i,1)-_msh->Get_edges_center()(k,1),2));
+			
+			// Calcul des coefficients alphaD et betaD pour des conditions de bord
+			alphaD = mu / d_ie;
+			betaD = -mu / d_ie;
 
-                triplets.emplace_back(t1, t1, (length / area_t1) * (alphaD));
-                this->_BC_RHS(t1) += (length / area_t1) * (-betaD) * h;
-            }
-        }
+			Eigen::Vector2d Vect_center;
+			Vect_center[0]=_msh->Get_edges_center()(k,0);
+			Vect_center[1]=_msh->Get_edges_center()(k,1);	
+
+			// Gestion des conditions aux bords
+			string bc_type = _msh->Get_edges()[k].Get_BC(); // Type de condition aux bords
+			if (bc_type == "Neumann") {
+				// Condition de Neumann :
+				double g = _fct->Neumann_value(Vect_center, t);  // Flux normal prescrit
+				this->_BC_RHS(i) = (betaA * d_ie * g * e_k) / area_Ti ;
+				this->_BC_RHS(i) += -mu * (e_k * g) / area_Ti;  // Contribution directe au RHS
+				triplets.push_back({i, i, e_k*(alphaA+betaA)/area_Ti});
+			}
+			else if (bc_type == "Dirichlet") {
+				// Valeur de Dirichlet prescrite (h)
+				double h = this->_fct->Dirichlet_value(Vect_center, t);  // Valeur sur l'arête
+				// Ajouter la contribution pour le terme de diffusion
+				this->_BC_RHS(i) = 2 * (betaA * e_k * h)/area_Ti;
+				this->_BC_RHS(i) += 2 * (betaD * e_k * h)/ area_Ti;  // Contribution au vecteur RHS pour T_i
+				triplets.push_back({i, i, e_k*(alphaA-betaA)/area_Ti + 2*e_k*(alphaD)/area_Ti});  // Contribution à la diagonale de T_i
+			}
+		}
+
     }
-
-    // Assembler la matrice des flux
     this->_mat_flux.setFromTriplets(triplets.begin(), triplets.end());
 }
-
-
 
 // --- Déjà implémenté ---
 // Construit la condition initiale au centre des triangles

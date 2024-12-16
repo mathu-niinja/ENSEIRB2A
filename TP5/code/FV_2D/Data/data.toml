@@ -14,7 +14,9 @@ t0 = 0.0
 tfinal = 0.2
 dt = 0.002
 # Time scheme: ExplicitEuler = Explicit Euler ImplicitEuler = Implicit Euler
+#scheme = "ExplicitEuler"
 scheme = "ImplicitEuler"
+
 
 # Boundary Conditions
 [BC]
@@ -26,7 +28,7 @@ BC = ["Neumann","Dirichlet","Neumann","Dirichlet"]
 # advection_hom_neumann ; advection_diffusion_all_BC
 [scenarii]
 # which_scenario = "none"
-which_scenario = "diffusion_hom_neumann"
+#which_scenario = "diffusion_hom_neumann"
 # which_scenario = "diffusion_all_BC"
 # which_scenario = "advection_hom_neumann"
-# which_scenario = "advection_diffusion_all_BC"
+ which_scenario = "advection_diffusion_all_BC"

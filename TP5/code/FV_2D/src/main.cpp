@@ -23,8 +23,7 @@ int main(int argc, char** argv)
    // ---------------------------------------------------------------------------
 
    // ------------------Définition du nombre d'itérations------------------------
-   int nb_iterations = int(ceil((data_file->Get_tfinal()-data_file->Get_t0())
-   /data_file->Get_dt()));
+   int nb_iterations = int(ceil((data_file->Get_tfinal()-data_file->Get_t0())/data_file->Get_dt()));
    data_file->Adapt_dt(data_file->Get_tfinal() / nb_iterations);
    // ---------------------------------------------------------------------------
 
@@ -60,6 +59,18 @@ int main(int argc, char** argv)
    }
 
    FiniteVolume* fin_vol = new FiniteVolume(analytical, data_file, mesh);
+   // cout << "debut build A" << endl;
+   // fin_vol->Build_flux_mat_and_rhs(0.); //afficher les matrices et vecteurs si besoin
+   // cout << "fin build A" << endl;
+   // cout << "Matrix A"<< endl;
+   // cout << fin_vol->Get_flux_matrix() << endl;
+   // cout << "-------------------------"<< endl;
+   // cout << "Vector b"<< endl;
+   // cout << fin_vol->Get_BC_RHS() << endl; 
+   // cout << "-------------------------"<< endl;
+   // cout << "Vector S"<< endl;
+   // cout << fin_vol->Source_term(0.) << endl; 
+   
    if (data_file->Get_scheme() == "ExplicitEuler") {
       time_scheme = new ExplicitEulerScheme(data_file, fin_vol);
    }

@@ -27,8 +27,8 @@ set( CMAKE_SKIP_INSTALL_RULES True )
 project( PG201_TP5 VERSION 2023 )
 
 # Décommentez la ligne que vous souhaitez, puis recompilez.
-set( CMAKE_BUILD_TYPE "Debug" )
-# set( CMAKE_BUILD_TYPE "Release" )
+#set( CMAKE_BUILD_TYPE "Debug" )
+set( CMAKE_BUILD_TYPE "Release" )
 
 # Nom de l'exécutable qui sera créé dans le répertoire "build/".
 # Nous ajoutons "Debug" ou "Release" au nom de l'exécutable afin de facilement les différencier.
