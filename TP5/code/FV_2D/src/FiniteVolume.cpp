@@ -78,6 +78,9 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 			alpha = alphaA + alphaD;
 			beta = betaA + betaD;
 
+			// cout << "alpha= " << alpha << endl;
+			// cout << "BETA= " << beta << endl;
+
 			double area_Tj = this->_msh->Get_triangles_area()[j];
 
             // Ajouter les triplets à la matrice
@@ -115,6 +118,9 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 				this->_BC_RHS(i) = 2 * (betaA * e_k * h)/area_Ti;
 				this->_BC_RHS(i) += 2 * (betaD * e_k * h)/ area_Ti;  // Contribution au vecteur RHS pour T_i
 				triplets.push_back({i, i, e_k*(alphaA-betaA)/area_Ti + 2*e_k*(alphaD)/area_Ti});  // Contribution à la diagonale de T_i
+
+				// cout << "alpha= " << alpha << endl;
+				// cout << "BETA = " << beta << endl;
 			}
 		}
 
