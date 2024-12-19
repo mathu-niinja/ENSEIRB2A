@@ -23,6 +23,7 @@ namespace AdvectionDiffusion
    {
       const double x(X[0]), y(X[1]);
       Eigen::VectorXd res(X.size());
+      //res[0] = 0.; res[1] = 0.;
       res[0] = -(y-0.5); res[1] = (x-0.5);  //peut etre un probleme de signe
       return res;
    }
@@ -43,7 +44,6 @@ namespace AdvectionDiffusion
       double Vy = x-0.5;
       return exp(-a*((x-Vx*t-x0)*(x-Vx*t-x0)+(y-Vy*t-y0)*(y-Vy*t-y0)))*exp(-this->_mu*t);
    }
-   
 }
 
 #define _ADVECTION_DIFFUSION_CPP

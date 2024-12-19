@@ -77,7 +77,6 @@ int main(int argc, char** argv)
    // Démarrage du chrono
    auto start = chrono::high_resolution_clock::now();
 
-
    if (!has_analytical) // Boucle temporelle simple pour solution numérique pure
    {
       cout << "Save initial condition " << endl;
@@ -107,7 +106,7 @@ int main(int argc, char** argv)
       {
          time_scheme->Advance();
          t+=data_file->Get_dt();
-         if (n%10 == 0 ) {
+         if (n%100 == 0 ) {
             time_scheme->Save_solution(n);
 
          }

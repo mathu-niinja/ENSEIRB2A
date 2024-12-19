@@ -25,6 +25,7 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
     this->_BC_RHS.resize(this->_msh->Get_triangles().size());
     //this->_BC_RHS.setZero();
 	this->_BC_RHS.setConstant(1.);
+    //this->_BC_RHS.setConstant(20.);
     vector<Triplet<double>> triplets;	triplets.clear();
 
 	string Flux_num_choice(_df->Get_numerical_flux_choice());
@@ -43,7 +44,7 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 
 		X(0)= this->_msh->Get_edges_center()(k,0);
 		X(1)= this->_msh->Get_edges_center()(k,1);
-		double vn(nx*_fct->Velocity(X,t)(0)+ny*_fct->Velocity(X,t)(1));
+		double vn(nx*_fct->Velocity(X,t)(0)+ ny*_fct->Velocity(X,t)(1));
 		
 		int i = _msh->Get_edges()[k].Get_T1(); //t1
 		int j = _msh->Get_edges()[k].Get_T2(); //t2
@@ -135,7 +136,7 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 				cout << "Choix de flux impossible" << endl; 
 			}
 
-			alpha = c_ab * val_B_alpha;
+			alpha =  c_ab * val_B_alpha;
 			beta = c_ab * val_B_beta;
 
 			// cout << "alpha peclet= " << alpha << endl;
@@ -151,6 +152,7 @@ void FiniteVolume::Build_flux_mat_and_rhs(const double& t)
 				const double h = _fct->Dirichlet_value(Vect_center,t);
 				triplets.push_back({i,i, alpha*e_k/area_Ti});
 				_BC_RHS[i] += beta*h*e_k/area_Ti;
+                cout << "Dirichlet bc type" << endl;
 			}
 			else if (bc_type == "Flux") {
 				const double f = _fct->Flux_value(Vect_center,t);

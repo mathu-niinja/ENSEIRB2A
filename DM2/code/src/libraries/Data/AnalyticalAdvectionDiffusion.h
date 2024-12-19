@@ -29,6 +29,8 @@ namespace AdvectionDiffusion
       virtual double Source_term(const Eigen::VectorXd &X, const double t) const { return 0; };
       virtual Eigen::VectorXd Velocity(const Eigen::VectorXd &X, const double t) const;
       virtual double Flux_value(const Eigen::VectorXd &X, const double t) const { return 0; };
+      //virtual double Flux_value(const Eigen::VectorXd &X, const double t) const { return -0.01; }; //changer en fonction du cas
+      //virtual double Dirichlet_value(const Eigen::VectorXd &X, const double t) const { return 20; };
       virtual double Dirichlet_value(const Eigen::VectorXd &X, const double t) const { return this->Exact_solution(X,t); };
    };
 
@@ -38,7 +40,7 @@ namespace AdvectionDiffusion
       virtual double Exact_solution(const Eigen::VectorXd &X, const double t) const;
       virtual Eigen::VectorXd Velocity(const Eigen::VectorXd &X, const double t) const;
       virtual double Source_term(const Eigen::VectorXd &X, const double t) const;
-      //virtual double Flux_Value(const Eigen::VectorXd &X, const double t) const;
+      virtual double Flux_Value(const Eigen::VectorXd &X, const double t) const {return 0; };
    };
 
 }
